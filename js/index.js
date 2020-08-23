@@ -27,6 +27,12 @@ class Calculator {
     // verifica se tem apenas números
     const reg = new RegExp("^\\d+$");
 
+    if (calc.reset && reg.test(input)) {
+      upperValue = '0';
+    }
+
+    calc.reset = 0;
+
     if (input == "AC") {
       calc.clearValues();
 
@@ -50,6 +56,28 @@ class Calculator {
       }
     }
   }
+
+  sum(n1, n2) {
+    return parseFloat(n1) + parseFloat(n2)
+  }
+
+  subtraction(n1, n2) {
+    return parseFloat(n1) - parseFloat(n2)
+  }
+
+  multiplication(n1, n2) {
+    return parseFloat(n1) * parseFloat(n2)
+  }
+
+  division(n1, n2) {
+    return parseFloat(n1) / parseFloat(n2)
+  }
+
+  refreshValues(total) {
+    this.upperValue.textContent = total;
+    this.resultValue.textContent = total;
+  }
+
   // resolve operação
   resolution() {
     // explode uma string em um array
@@ -68,10 +96,11 @@ class Calculator {
       }
     }
 
-    console.log('-',result);
+    if (result) {
+      calc.reset = 1;
+    }
 
-    this.upperValue.textContent = result;
-    this.resultValue.textContent = result;
+    calc.refreshValues(result);
   }
 }
 
