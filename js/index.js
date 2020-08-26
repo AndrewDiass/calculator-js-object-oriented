@@ -24,7 +24,6 @@ class Calculator {
   btnPress() {
     let input = this.textContent;
     let upperValue = calc.upperValue.textContent;
-    // verifica se tem apenas números
     const reg = new RegExp("^\\d+$");
 
     if (calc.reset && reg.test(input)) {
@@ -39,18 +38,18 @@ class Calculator {
     } else if (input == "=") {
       calc.resolution();
     } else {
-      // checa se precisa adicionar ou não
       if (calc.checkLastDigit(input, upperValue, reg)) {
         return false;
       }
 
-      // adiciona espaços aos operadores
       if (!reg.test(input)) {
         input = ` ${input} `;
       }
 
       if (upperValue == "0") {
-        calc.upperValue.textContent = input;
+        if (reg.test(input)) {
+          calc.upperValue.textContent = input;
+        }
       } else {
         calc.upperValue.textContent += input;
       }
@@ -78,21 +77,34 @@ class Calculator {
     this.resultValue.textContent = total;
   }
 
-  // resolve operação
   resolution() {
-    // explode uma string em um array
-    console.log('teste');
-
     let upperValueArray = this.upperValue.textContent.split(" ");
-    console.log(upperValueArray);
-    //resultado da operação
     let result = 0;
 
     for (let i = 0; i <= upperValueArray.length; i++) {
+      let operation = 0;
       let actualItem = upperValueArray[i];
 
-      if (actualItem == '+') {
-        result = parseFloat(upperValueArray[i - 1]) + parseFloat(upperValueArray[i + 1])
+      if(actualItem == 'x') {
+        result = calc.multiplication(upperValueArray[i - 1], upperValueArray[i + 1]);
+        operation = 1;
+      } else if (actualItem == '/') {
+        result = calc.division(upperValueArray[i - 1], upperValueArray[i + 1]);
+        operation = 1;
+      } else if (!upperValueArray.includes('x') && !upperValueArray.includes('/')) {
+        if (actualItem == '+') {
+          result = calc.sum(upperValueArray[i - 1], upperValueArray[i + 1]);
+          operation = 1;
+        } else if (actualItem == '-') {
+          result = calc.subtraction(upperValueArray[i - 1], upperValueArray[i + 1]);
+          operation = 1;
+        }
+      }
+
+      if (operation) {
+        upperValueArray[i - 1] = result;
+        upperValueArray.splice(i, 2);
+        i = 0;
       }
     }
 
@@ -104,13 +116,8 @@ class Calculator {
   }
 }
 
-//start obj
 let calc = new Calculator();
-
-//start btn
 let buttons = document.querySelectorAll(".btn");
-
-// map all buttons
 for (let i = 0; buttons.length > i; i++) {
   buttons[i].addEventListener("click", calc.btnPress);
 }
